@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="ic_clear_margin">56dp</dimen>
+
+    <dimen name="lmo_radius">28dp</dimen>
+    <dimen name="lmo_radius_merge">5dp</dimen>
+    <dimen name="lmo_pref_horizontal_padding">16dp</dimen>
+</resources>
