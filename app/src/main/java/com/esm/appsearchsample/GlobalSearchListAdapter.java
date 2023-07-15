@@ -37,32 +37,7 @@ public class GlobalSearchListAdapter extends RecyclerView.Adapter<GlobalSearchLi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
-        if (listdata.get(position).getAppName().equals("")) {
-            holder.textViewAppName.setVisibility(View.GONE);
-
-        } else {
-            holder.textViewAppName.setVisibility(View.VISIBLE);
-        }
-
-        try {
-            if (((position + 1) < listdata.size()) && (listdata.get(position).getAppName() == "") && (listdata.get(position + 1).getAppName() != "")) {
-                holder.linearLayout.setBackgroundResource(R.drawable.lmo_preference_background_bottom);
-            } else {
-                holder.linearLayout.setBackgroundResource(R.drawable.lmo_preference_background_middle);
-            }
-
-            if (((position + 1) < listdata.size()) && (listdata.get(position).getAppName() != "") && (listdata.get(position + 1).getAppName() != "")) {
-                holder.linearLayout.setBackgroundResource(R.drawable.lmo_preference_background_bottom);
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (position == listdata.size() - 1) {
-            holder.linearLayout.setBackgroundResource(R.drawable.lmo_preference_background_bottom);
-
-        }
+        AppUtils.setBackgroundListItem(holder, position ,listdata);
 
 
         holder.textViewAppName.setText(listdata.get(position).getAppName());

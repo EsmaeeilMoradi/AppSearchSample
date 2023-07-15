@@ -96,9 +96,9 @@ public class MainActivity extends AppCompatActivity {
                                                             y = img2;
                                                             d = getDrawable(y);
                                                         }
-                                                        appName = AppName.getAppNameFromPkgName(context, listAppSearchResult2.get(x).getGenericDocument().getNamespace());
+                                                        appName = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x).getGenericDocument().getNamespace());
                                                         if (x >= 1) {
-                                                            appName2 = AppName.getAppNameFromPkgName(context, listAppSearchResult2.get(x - 1).getGenericDocument().getNamespace());
+                                                            appName2 = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x - 1).getGenericDocument().getNamespace());
                                                             if (appName == appName2) {
                                                                 appName = "";
                                                             }
