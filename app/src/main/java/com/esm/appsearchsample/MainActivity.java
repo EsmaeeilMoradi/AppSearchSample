@@ -4,6 +4,7 @@ import android.app.appsearch.AppSearchManager;
 import android.app.appsearch.SearchResult;
 import android.app.appsearch.SearchSpec;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -12,21 +13,25 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GlobalSearchListAdapter.OnSearchListener {
     private Executor mExecutor;
     private Context context;
     private String appName = "";
     private String appName2 = "";
+    private ArrayList<GlobalSearchListData> myListData = new ArrayList<>();
+    private GlobalSearchListAdapter adapter = new GlobalSearchListAdapter(myListData, this);
 
 
     @Override
@@ -38,9 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
         EditText edt_search = findViewById(R.id.edt_search);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        ArrayList<GlobalSearchListData> myListData = new ArrayList<>();
-
-        GlobalSearchListAdapter adapter = new GlobalSearchListAdapter(myListData);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplication()));
         recyclerView.setAdapter(adapter);
@@ -145,11 +147,24 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }
+
             @Override
             public void afterTextChanged(Editable s) {
                 adapter.notifyDataSetChanged();
                 myListData.clear();
             }
         });
+    }
+
+    @Override
+    public void onSearchClick(int position) {
+        Intent intent;
+        try {
+            intent = Intent.parseUri(myListData.get(position).getIntent()[0], 0);
+            startActivity(intent);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        Toast.makeText(this, "click on item: " + myListData.get(position).getDescription(), Toast.LENGTH_LONG).show();
     }
 }

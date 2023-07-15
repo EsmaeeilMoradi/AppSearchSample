@@ -1,26 +1,25 @@
 package com.esm.appsearchsample;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class GlobalSearchListAdapter extends RecyclerView.Adapter<GlobalSearchListAdapter.ViewHolder> {
-    private ArrayList<GlobalSearchListData> listdata;
+    private ArrayList<GlobalSearchListData> globalSearchListData;
+    private OnSearchListener mOnSearchListener;
 
-    public GlobalSearchListAdapter(ArrayList<GlobalSearchListData> listdata) {
-        this.listdata = listdata;
+    public GlobalSearchListAdapter(ArrayList<GlobalSearchListData> globalSearchListData, OnSearchListener OnSearchListener) {
+        this.globalSearchListData = globalSearchListData;
+        this.mOnSearchListener = OnSearchListener;
 
     }
 
@@ -28,7 +27,7 @@ public class GlobalSearchListAdapter extends RecyclerView.Adapter<GlobalSearchLi
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View listItem = layoutInflater.inflate(R.layout.list_item, parent, false);
-        ViewHolder viewHolder = new ViewHolder(listItem);
+        ViewHolder viewHolder = new ViewHolder(listItem, mOnSearchListener);
 
         return viewHolder;
     }
@@ -37,52 +36,47 @@ public class GlobalSearchListAdapter extends RecyclerView.Adapter<GlobalSearchLi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
-        AppUtils.setBackgroundListItem(holder, position ,listdata);
+        AppUtils.setBackgroundListItem(holder, position, globalSearchListData);
 
 
-        holder.textViewAppName.setText(listdata.get(position).getAppName());
+        holder.textView.setText(globalSearchListData.get(position).getDescription());
+        holder.textViewAppName.setText(globalSearchListData.get(position).getAppName());
 
-        holder.textView.setText(listdata.get(position).getDescription());
-        holder.imageView.setImageDrawable(listdata.get(position).getImgId());
+        holder.imageView.setImageDrawable(globalSearchListData.get(position).getImgId());
 
 
-        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(view.getContext(), "click on item: " + listdata.get(position).getDescription(), Toast.LENGTH_LONG).show();
-
-                Intent intent;
-                try {
-                    intent = Intent.parseUri(listdata.get(position).getIntent()[0], 0);
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException(e);
-                }
-                view.getContext().startActivity(intent);
-
-            }
-        });
     }
 
 
     @Override
     public int getItemCount() {
-        return listdata.size();
+        return globalSearchListData.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView imageView;
         public TextView textView;
         public TextView textViewAppName;
         public CardView linearLayout;
 
+        OnSearchListener onSearchListener;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, OnSearchListener onSearchListener) {
             super(itemView);
-            this.imageView = (ImageView) itemView.findViewById(R.id.imageView);
-            this.textView = (TextView) itemView.findViewById(R.id.textView);
             this.linearLayout = (CardView) itemView.findViewById(R.id.card_view);
             this.textViewAppName = (TextView) itemView.findViewById(R.id.txt_app_name);
+            this.imageView = (ImageView) itemView.findViewById(R.id.imageView);
+            this.textView = (TextView) itemView.findViewById(R.id.textView);
+            this.onSearchListener = onSearchListener;
+            linearLayout.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            onSearchListener.onSearchClick(getAdapterPosition());
         }
     }
-
+    public interface OnSearchListener {
+        void onSearchClick(int position);
+    }
 }
