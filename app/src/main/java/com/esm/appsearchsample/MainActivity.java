@@ -9,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -25,6 +27,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements GlobalSearchListAdapter.OnSearchListener {
     private Executor mExecutor;
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
     private String appName2 = "";
     private ArrayList<GlobalSearchListData> myListData = new ArrayList<>();
     private GlobalSearchListAdapter adapter = new GlobalSearchListAdapter(myListData, this);
+
+    private final Handler mUiHandler = new Handler(Looper.getMainLooper());
 
 
     @Override
@@ -51,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
 
         SearchSpec searchSpec = new SearchSpec.Builder().build();
 
-        mExecutor = this.getMainExecutor();
+        mExecutor = Executors.newSingleThreadExecutor();
 
         AppSearchManager appSearchManager = this.getSystemService(AppSearchManager.class);
 
@@ -80,65 +85,80 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
 
                                         List<SearchResult> listAppSearchResult2 = listAppSearchResult.getResultValue();
 
-                                        for (int x = 0; x < listAppSearchResult.getResultValue().size(); x++) {
-                                            if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("Shortcut")) {
-                                                try {
-                                                    if (
-                                                            listAppSearchResult2.get(x).getGenericDocument().getPropertyString("shortLabel") != null &
-                                                                    listAppSearchResult2.get(x).getGenericDocument().getPropertyString("intents") != null
-                                                    ) {
-                                                        Resources res = getApplication().getPackageManager().getResourcesForApplication(listAppSearchResult2.get(x).getGenericDocument().getNamespace());
-                                                        int img1 = (int) listAppSearchResult2.get(x).getGenericDocument().getPropertyLong("iconResId");
-                                                        int img2 = R.drawable.border;
-                                                        int y;
-                                                        Drawable d;
-                                                        if (img1 != 0) {
-                                                            y = img1;
-                                                            d = res.getDrawable(y);
-                                                        } else {
-                                                            y = img2;
-                                                            d = getDrawable(y);
-                                                        }
-                                                        appName = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x).getGenericDocument().getNamespace());
-                                                        if (x >= 1) {
-                                                            appName2 = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x - 1).getGenericDocument().getNamespace());
-                                                            if (appName == appName2) {
-                                                                appName = "";
+                                        mUiHandler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                for (int x = 0; x < listAppSearchResult.getResultValue().size(); x++) {
+
+                                                    if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("Shortcut")) {
+                                                        try {
+                                                            if (
+                                                                    listAppSearchResult2.get(x).getGenericDocument().getPropertyString("shortLabel") != null &
+                                                                            listAppSearchResult2.get(x).getGenericDocument().getPropertyString("intents") != null
+                                                            ) {
+                                                                Resources res = getApplication().getPackageManager().getResourcesForApplication(listAppSearchResult2.get(x).getGenericDocument().getNamespace());
+                                                                int img1 = (int) listAppSearchResult2.get(x).getGenericDocument().getPropertyLong("iconResId");
+                                                                int img2 = R.drawable.border;
+                                                                int y;
+                                                                Drawable d;
+                                                                if (img1 != 0) {
+                                                                    y = img1;
+                                                                    d = res.getDrawable(y);
+                                                                } else {
+                                                                    y = img2;
+                                                                    d = getDrawable(y);
+                                                                }
+                                                                appName = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x).getGenericDocument().getNamespace());
+                                                                if (x >= 1) {
+                                                                    appName2 = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x - 1).getGenericDocument().getNamespace());
+                                                                    if (appName == appName2) {
+                                                                        appName = "";
+                                                                    }
+                                                                }
+                                                                myListData.add(new GlobalSearchListData(
+                                                                        listAppSearchResult2.get(x).getGenericDocument().getPropertyString("shortLabel"),
+                                                                        d,
+                                                                        listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("intents"),
+                                                                        appName
+                                                                ));
                                                             }
+
+                                                        } catch (
+                                                                PackageManager.NameNotFoundException e) {
+                                                            throw new RuntimeException(e);
                                                         }
-                                                        myListData.add(new GlobalSearchListData(
-                                                                listAppSearchResult2.get(x).getGenericDocument().getPropertyString("shortLabel"),
-                                                                d,
-                                                                listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("intents"),
-                                                                appName
-                                                        ));
+                                                        adapter.notifyDataSetChanged();
+
+
                                                     }
 
-                                                } catch (
-                                                        PackageManager.NameNotFoundException e) {
-                                                    throw new RuntimeException(e);
+                                                    else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:Person")) {
+                                                        myListData.add(new GlobalSearchListData(
+                                                                listAppSearchResult2.get(x).getGenericDocument().getPropertyString("givenName"),
+                                                                ContextCompat.getDrawable(getApplication(), R.drawable.ic_launcher_background),
+                                                                listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("externalUri"),
+                                                                "Contact Person"));
+
+                                                        adapter.notifyDataSetChanged();
+
+
+                                                    }
+
+                                                    else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:ContactPoint")) {
+                                                        Log.e("Test", "SchemaType(builtin:ContactPoint) : " + listAppSearchResult2.get(x).getGenericDocument().getSchemaType());
+
+                                                    }
+
+                                                    else {
+                                                        Log.e("Test", "SchemaType(Unknown) :  Not yet added to the structure of the program|==> "
+                                                                + listAppSearchResult2.get(x).getGenericDocument().getSchemaType());
+                                                    }
+
                                                 }
-                                                adapter.notifyDataSetChanged();
 
-
-                                            } else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:Person")) {
-                                                myListData.add(new GlobalSearchListData(
-                                                        listAppSearchResult2.get(x).getGenericDocument().getPropertyString("givenName"),
-                                                        ContextCompat.getDrawable(getApplication(), R.drawable.ic_launcher_background),
-                                                        listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("externalUri"),
-                                                        "Contact Person"));
-
-                                                adapter.notifyDataSetChanged();
-
-
-                                            } else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:ContactPoint")) {
-                                                Log.e("Test", "SchemaType(builtin:ContactPoint) : " + listAppSearchResult2.get(x).getGenericDocument().getSchemaType());
-
-                                            } else {
-                                                Log.e("Test", "SchemaType(Unknown) :  Not yet added to the structure of the program|==> "
-                                                        + listAppSearchResult2.get(x).getGenericDocument().getSchemaType());
                                             }
-                                        }
+                                        });
+
                                     });
                         });
 
