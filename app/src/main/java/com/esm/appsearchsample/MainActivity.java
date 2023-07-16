@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -152,6 +153,15 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
             public void afterTextChanged(Editable s) {
                 adapter.notifyDataSetChanged();
                 myListData.clear();
+            }
+        });
+
+        findViewById(R.id.img_settings).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
+                startActivity(intent);
             }
         });
     }
