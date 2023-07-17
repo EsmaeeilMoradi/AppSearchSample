@@ -41,6 +41,7 @@ public class GlobalSearchListAdapter extends RecyclerView.Adapter<GlobalSearchLi
 
         holder.textView.setText(globalSearchListData.get(position).getDescription());
         holder.textViewAppName.setText(globalSearchListData.get(position).getAppName());
+        holder.appIcon.setImageDrawable(globalSearchListData.get(position).getAppIcon());
 
         holder.imageView.setImageDrawable(globalSearchListData.get(position).getImgId());
 
@@ -55,6 +56,7 @@ public class GlobalSearchListAdapter extends RecyclerView.Adapter<GlobalSearchLi
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView imageView;
+        public ImageView appIcon;
         public TextView textView;
         public TextView textViewAppName;
         public CardView linearLayout;
@@ -67,6 +69,7 @@ public class GlobalSearchListAdapter extends RecyclerView.Adapter<GlobalSearchLi
             this.textViewAppName = (TextView) itemView.findViewById(R.id.txt_app_name);
             this.imageView = (ImageView) itemView.findViewById(R.id.imageView);
             this.textView = (TextView) itemView.findViewById(R.id.textView);
+            this.appIcon=  itemView.findViewById(R.id.img_app_icon);
             this.onSearchListener = onSearchListener;
             linearLayout.setOnClickListener(this);
         }

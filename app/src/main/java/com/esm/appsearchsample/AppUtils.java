@@ -3,6 +3,7 @@ package com.esm.appsearchsample;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,16 @@ public class AppUtils {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
             return "";
+        }
+    }
+    public static Drawable getAppIconFromPkgName(Context context, String Packagename) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            Drawable d = packageManager.getApplicationIcon(Packagename);
+            return d;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -43,6 +54,13 @@ public class AppUtils {
         }
         if (position == listdata.size() - 1) {
             holder.linearLayout.setBackgroundResource(R.drawable.lmo_preference_background_bottom);
+        }
+
+        if (listdata.get(position).getAppIcon() == null){
+            holder.appIcon.setVisibility(View.GONE);
+        }else {
+            holder.appIcon.setVisibility(View.VISIBLE);
+
         }
     }
 

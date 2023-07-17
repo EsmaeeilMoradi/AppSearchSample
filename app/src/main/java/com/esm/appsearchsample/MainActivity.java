@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
     private Executor mExecutor;
     private Context context;
     private String appName = "";
+    private Drawable appIcon ;
     private String appName2 = "";
     private ArrayList<GlobalSearchListData> myListData = new ArrayList<>();
     private GlobalSearchListAdapter adapter = new GlobalSearchListAdapter(myListData, this);
@@ -84,11 +85,15 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
                                     listAppSearchResult -> {
 
                                         List<SearchResult> listAppSearchResult2 = listAppSearchResult.getResultValue();
+                                        Log.e("ESM", "SIZE :   " +listAppSearchResult.getResultValue().size());
 
                                         mUiHandler.post(new Runnable() {
                                             @Override
                                             public void run() {
                                                 for (int x = 0; x < listAppSearchResult.getResultValue().size(); x++) {
+
+                                                    Log.e("ESM", "GenericDocument("+x+") :   " +listAppSearchResult.getResultValue().get(x).getGenericDocument());
+
 
                                                     if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("Shortcut")) {
                                                         try {
@@ -108,14 +113,19 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
                                                                     y = img2;
                                                                     d = getDrawable(y);
                                                                 }
+
                                                                 appName = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x).getGenericDocument().getNamespace());
+                                                                appIcon = AppUtils.getAppIconFromPkgName(context, listAppSearchResult2.get(x).getGenericDocument().getNamespace());
                                                                 if (x >= 1) {
                                                                     appName2 = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x - 1).getGenericDocument().getNamespace());
                                                                     if (appName == appName2) {
                                                                         appName = "";
+                                                                        appIcon = null;
+
                                                                     }
                                                                 }
                                                                 myListData.add(new GlobalSearchListData(
+                                                                        appIcon,
                                                                         listAppSearchResult2.get(x).getGenericDocument().getPropertyString("shortLabel"),
                                                                         d,
                                                                         listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("intents"),
@@ -132,8 +142,10 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
 
                                                     }
 
+
                                                     else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:Person")) {
                                                         myListData.add(new GlobalSearchListData(
+                                                                appIcon,
                                                                 listAppSearchResult2.get(x).getGenericDocument().getPropertyString("givenName"),
                                                                 ContextCompat.getDrawable(getApplication(), R.drawable.ic_launcher_background),
                                                                 listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("externalUri"),
@@ -143,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
 
 
                                                     }
+
 
                                                     else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:ContactPoint")) {
                                                         Log.e("Test", "SchemaType(builtin:ContactPoint) : " + listAppSearchResult2.get(x).getGenericDocument().getSchemaType());
