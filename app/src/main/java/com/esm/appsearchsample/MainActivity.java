@@ -6,7 +6,6 @@ import android.app.appsearch.SearchSpec;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,13 +17,21 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.esm.appsearchsample.adapter.BetterAdapter_Visitor;
+import com.esm.appsearchsample.adapter.TypeFactory;
+import com.esm.appsearchsample.adapter.TypeFactoryForList;
+import com.esm.appsearchsample.adapter.Visitable;
+import com.esm.appsearchsample.entities.AppSearchShortcutData;
+
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -33,10 +40,19 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
     private Executor mExecutor;
     private Context context;
     private String appName = "";
-    private Drawable appIcon ;
+    private Drawable appIcon;
     private String appName2 = "";
     private ArrayList<GlobalSearchListData> myListData = new ArrayList<>();
+    private ArrayList<Visitable> elementList = new ArrayList<>();
+
+    TypeFactory typeFactory = new TypeFactoryForList();
+    ;
     private GlobalSearchListAdapter adapter = new GlobalSearchListAdapter(myListData, this);
+    private BetterAdapter_Visitor adapter2 = new BetterAdapter_Visitor(
+            elementList,
+            typeFactory
+    );
+
 
     private final Handler mUiHandler = new Handler(Looper.getMainLooper());
 
@@ -52,7 +68,9 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplication()));
-        recyclerView.setAdapter(adapter);
+//        recyclerView.setAdapter(adapter);
+
+        recyclerView.setAdapter(adapter2);
 
 
         SearchSpec searchSpec = new SearchSpec.Builder().build();
@@ -65,16 +83,20 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
         edt_search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                myListData.clear();
-                adapter.notifyDataSetChanged();
+//                myListData.clear();
+//                adapter.notifyDataSetChanged();
+                elementList.clear();
+                adapter2.notifyDataSetChanged();
 
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (count == 0) {
-                    myListData.clear();
-                    adapter.notifyDataSetChanged();
+//                    myListData.clear();
+//                    adapter.notifyDataSetChanged();
+                    elementList.clear();
+                    adapter2.notifyDataSetChanged();
 
                 }
 
@@ -114,23 +136,33 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
 
                                                                     }
                                                                 }
-                                                                myListData.add(new GlobalSearchListData(
+//                                                                myListData.add(new GlobalSearchListData(
+//                                                                        appIcon,
+//                                                                        listAppSearchResult2.get(x).getGenericDocument().getPropertyString("shortLabel"),
+//                                                                        d,
+//                                                                        listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("intents"),
+//                                                                        appName
+//                                                                ));
+                                                                elementList.add(new GlobalSearchListData(
                                                                         appIcon,
                                                                         listAppSearchResult2.get(x).getGenericDocument().getPropertyString("shortLabel"),
                                                                         d,
                                                                         listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("intents"),
                                                                         appName
                                                                 ));
+
+
                                                             }
 
                                                         } catch (
                                                                 PackageManager.NameNotFoundException e) {
                                                             throw new RuntimeException(e);
                                                         }
-                                                        adapter.notifyDataSetChanged();
+//                                                        adapter.notifyDataSetChanged();
+                                                        adapter2.notifyDataSetChanged();
 
 
-                                                    } else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:Person")) {
+                                                    } else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:Person") && false) {
                                                         myListData.add(new GlobalSearchListData(
                                                                 appIcon,
                                                                 listAppSearchResult2.get(x).getGenericDocument().getPropertyString("givenName"),
@@ -141,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
                                                         adapter.notifyDataSetChanged();
 
 
-                                                    } else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:ContactPoint")) {
+                                                    } else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:ContactPoint") && false) {
                                                         Log.e("Test", "SchemaType(builtin:ContactPoint) : " + listAppSearchResult2.get(x).getGenericDocument().getSchemaType());
 
                                                     } else {
@@ -166,16 +198,19 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
 
             @Override
             public void afterTextChanged(Editable s) {
-                adapter.notifyDataSetChanged();
-                myListData.clear();
+//                adapter.notifyDataSetChanged();
+//                myListData.clear();
+                adapter2.notifyDataSetChanged();
+                elementList.clear();
             }
         });
+
 
         findViewById(R.id.img_settings).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent);
             }
         });

@@ -2,7 +2,10 @@ package com.esm.appsearchsample;
 
 import android.graphics.drawable.Drawable;
 
-public class GlobalSearchListData {
+import com.esm.appsearchsample.adapter.TypeFactory;
+import com.esm.appsearchsample.adapter.Visitable;
+
+public class GlobalSearchListData implements Visitable {
     private Drawable appIcon;
     private String description;
     private String appName;
@@ -51,5 +54,10 @@ public class GlobalSearchListData {
 
     public void setAppIcon(Drawable appIcon) {
         this.appIcon = appIcon;
+    }
+
+    @Override
+    public int type(TypeFactory typeFactory) {
+        return  typeFactory.type(this);
     }
 }
