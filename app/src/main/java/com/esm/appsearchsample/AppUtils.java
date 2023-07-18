@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AppUtils {
-    public static String getAppNameFromPkgName(Context context, String Packagename) {
+    public static String getAppNameFromPkgName(Context context, String PackageName) {
         try {
             PackageManager packageManager = context.getPackageManager();
-            ApplicationInfo info = packageManager.getApplicationInfo(Packagename, PackageManager.GET_META_DATA);
+            ApplicationInfo info = packageManager.getApplicationInfo(PackageName, PackageManager.GET_META_DATA);
             String appName = (String) packageManager.getApplicationLabel(info);
             return appName;
         } catch (PackageManager.NameNotFoundException e) {
@@ -25,10 +25,11 @@ public class AppUtils {
             return "";
         }
     }
-    public static Drawable getAppIconFromPkgName(Context context, String Packagename) {
+
+    public static Drawable getAppIconFromPkgName(Context context, String PackageName) {
         try {
             PackageManager packageManager = context.getPackageManager();
-            Drawable d = packageManager.getApplicationIcon(Packagename);
+            Drawable d = packageManager.getApplicationIcon(PackageName);
             return d;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -38,18 +39,9 @@ public class AppUtils {
 
     public static Drawable getAppIconFromIconResId(Context context, List<SearchResult> searchResults, int position) throws PackageManager.NameNotFoundException {
         Resources res = context.getPackageManager().getResourcesForApplication(searchResults.get(position).getGenericDocument().getNamespace());
-        int img1 = (int) searchResults.get(position).getGenericDocument().getPropertyLong("iconResId");
-        int img2 = R.drawable.border;
-        int y;
-        Drawable d;
-        if (img1 != 0) {
-            y = img1;
-            d = res.getDrawable(y);
-        } else {
-            y = img2;
-            d = context.getDrawable(y);
-        }
-        return d;
+        int iconResId = (int) searchResults.get(position).getGenericDocument().getPropertyLong("iconResId");
+        Drawable appIconDrawable = (iconResId != 0) ? res.getDrawable(iconResId) : context.getDrawable(R.drawable.border);
+        return appIconDrawable;
     }
 
     public static void setBackgroundListItem(@NonNull GlobalSearchListAdapter.ViewHolder holder, int position, ArrayList<GlobalSearchListData> listdata) {
@@ -75,9 +67,9 @@ public class AppUtils {
             holder.linearLayout.setBackgroundResource(R.drawable.lmo_preference_background_bottom);
         }
 
-        if (listdata.get(position).getAppIcon() == null){
+        if (listdata.get(position).getAppIcon() == null) {
             holder.appIcon.setVisibility(View.GONE);
-        }else {
+        } else {
             holder.appIcon.setVisibility(View.VISIBLE);
 
         }
