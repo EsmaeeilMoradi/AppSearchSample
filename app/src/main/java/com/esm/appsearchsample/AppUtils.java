@@ -1,14 +1,17 @@
 package com.esm.appsearchsample;
 
+import android.app.appsearch.SearchResult;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AppUtils {
     public static String getAppNameFromPkgName(Context context, String Packagename) {
@@ -31,6 +34,22 @@ public class AppUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static Drawable getAppIconFromIconResId(Context context, List<SearchResult> searchResults, int position) throws PackageManager.NameNotFoundException {
+        Resources res = context.getPackageManager().getResourcesForApplication(searchResults.get(position).getGenericDocument().getNamespace());
+        int img1 = (int) searchResults.get(position).getGenericDocument().getPropertyLong("iconResId");
+        int img2 = R.drawable.border;
+        int y;
+        Drawable d;
+        if (img1 != 0) {
+            y = img1;
+            d = res.getDrawable(y);
+        } else {
+            y = img2;
+            d = context.getDrawable(y);
+        }
+        return d;
     }
 
     public static void setBackgroundListItem(@NonNull GlobalSearchListAdapter.ViewHolder holder, int position, ArrayList<GlobalSearchListData> listdata) {

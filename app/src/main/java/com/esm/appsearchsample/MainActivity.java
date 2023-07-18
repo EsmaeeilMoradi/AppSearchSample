@@ -85,14 +85,14 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
                                     listAppSearchResult -> {
 
                                         List<SearchResult> listAppSearchResult2 = listAppSearchResult.getResultValue();
-                                        Log.e("ESM", "SIZE :   " +listAppSearchResult.getResultValue().size());
+                                        Log.e("ESM", "SIZE :   " + listAppSearchResult.getResultValue().size());
 
                                         mUiHandler.post(new Runnable() {
                                             @Override
                                             public void run() {
                                                 for (int x = 0; x < listAppSearchResult.getResultValue().size(); x++) {
 
-                                                    Log.e("ESM", "GenericDocument("+x+") :   " +listAppSearchResult.getResultValue().get(x).getGenericDocument());
+                                                    Log.e("ESM", "GenericDocument(" + x + ") :   " + listAppSearchResult.getResultValue().get(x).getGenericDocument());
 
 
                                                     if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("Shortcut")) {
@@ -101,21 +101,11 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
                                                                     listAppSearchResult2.get(x).getGenericDocument().getPropertyString("shortLabel") != null &
                                                                             listAppSearchResult2.get(x).getGenericDocument().getPropertyString("intents") != null
                                                             ) {
-                                                                Resources res = getApplication().getPackageManager().getResourcesForApplication(listAppSearchResult2.get(x).getGenericDocument().getNamespace());
-                                                                int img1 = (int) listAppSearchResult2.get(x).getGenericDocument().getPropertyLong("iconResId");
-                                                                int img2 = R.drawable.border;
-                                                                int y;
-                                                                Drawable d;
-                                                                if (img1 != 0) {
-                                                                    y = img1;
-                                                                    d = res.getDrawable(y);
-                                                                } else {
-                                                                    y = img2;
-                                                                    d = getDrawable(y);
-                                                                }
 
+                                                                Drawable d = AppUtils.getAppIconFromIconResId(context, listAppSearchResult2, x);
                                                                 appName = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x).getGenericDocument().getNamespace());
                                                                 appIcon = AppUtils.getAppIconFromPkgName(context, listAppSearchResult2.get(x).getGenericDocument().getNamespace());
+
                                                                 if (x >= 1) {
                                                                     appName2 = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x - 1).getGenericDocument().getNamespace());
                                                                     if (appName == appName2) {
@@ -140,10 +130,7 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
                                                         adapter.notifyDataSetChanged();
 
 
-                                                    }
-
-
-                                                    else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:Person")) {
+                                                    } else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:Person")) {
                                                         myListData.add(new GlobalSearchListData(
                                                                 appIcon,
                                                                 listAppSearchResult2.get(x).getGenericDocument().getPropertyString("givenName"),
@@ -154,15 +141,10 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
                                                         adapter.notifyDataSetChanged();
 
 
-                                                    }
-
-
-                                                    else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:ContactPoint")) {
+                                                    } else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:ContactPoint")) {
                                                         Log.e("Test", "SchemaType(builtin:ContactPoint) : " + listAppSearchResult2.get(x).getGenericDocument().getSchemaType());
 
-                                                    }
-
-                                                    else {
+                                                    } else {
                                                         Log.e("Test", "SchemaType(Unknown) :  Not yet added to the structure of the program|==> "
                                                                 + listAppSearchResult2.get(x).getGenericDocument().getSchemaType());
                                                     }
