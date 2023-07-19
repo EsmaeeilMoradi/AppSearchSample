@@ -23,7 +23,7 @@ import java.util.Map;
  * Converts this {GenericDocument} object into { ShortcutInfo} to read the information.
  */
 
-public class AppSearchShortcutData implements Visitable {
+public class AppSearchShortcutDataTemp implements Visitable {
 
     private String namespace;
     private String schemaType;
@@ -31,11 +31,11 @@ public class AppSearchShortcutData implements Visitable {
     private String shortLabel;
     private int iconResId;
 
-    public AppSearchShortcutData(String namespace,
-                                 String schemaType,
-                                 ArrayList<Intent> intents,
-                                 String shortLabel,
-                                 int iconResId) {
+    public AppSearchShortcutDataTemp(String namespace,
+                                     String schemaType,
+                                     ArrayList<Intent> intents,
+                                     String shortLabel,
+                                     int iconResId) {
         this.namespace = namespace;
         this.schemaType = schemaType;
         this.intents = intents;

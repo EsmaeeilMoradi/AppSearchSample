@@ -5,20 +5,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.esm.appsearchsample.entities.AppSearchShortcut;
+
 import java.util.ArrayList;
 
 public class GlobalSearchListAdapter extends RecyclerView.Adapter<GlobalSearchListAdapter.ViewHolder> {
-    private ArrayList<GlobalSearchListData> globalSearchListData;
+    private ArrayList<AppSearchShortcut> appSearchListData;
     private OnSearchListener mOnSearchListener;
 
-    public GlobalSearchListAdapter(ArrayList<GlobalSearchListData> globalSearchListData, OnSearchListener OnSearchListener) {
-        this.globalSearchListData = globalSearchListData;
+    public GlobalSearchListAdapter(ArrayList<AppSearchShortcut> appSearchListData, OnSearchListener OnSearchListener) {
+        this.appSearchListData = appSearchListData;
         this.mOnSearchListener = OnSearchListener;
 
     }
@@ -26,7 +29,7 @@ public class GlobalSearchListAdapter extends RecyclerView.Adapter<GlobalSearchLi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View listItem = layoutInflater.inflate(R.layout.list_item, parent, false);
+        View listItem = layoutInflater.inflate(R.layout.viewholder_shortcut, parent, false);
         ViewHolder viewHolder = new ViewHolder(listItem, mOnSearchListener);
 
         return viewHolder;
@@ -36,14 +39,16 @@ public class GlobalSearchListAdapter extends RecyclerView.Adapter<GlobalSearchLi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
-        AppUtils.setBackgroundListItem(holder, position, globalSearchListData);
+        AppUtils.setBackgroundListShortcutItem(holder, position, appSearchListData);
 
 
-        holder.textView.setText(globalSearchListData.get(position).getDescription());
-        holder.textViewAppName.setText(globalSearchListData.get(position).getAppName());
-        holder.appIcon.setImageDrawable(globalSearchListData.get(position).getAppIcon());
-
-        holder.imageView.setImageDrawable(globalSearchListData.get(position).getImgId());
+        holder.tvShortcutName.setText(appSearchListData.get(position).getShortLabel());
+        holder.tvAppName.setText(appSearchListData.get(position).getAppName());
+        holder.imgAppIcon.setImageDrawable(appSearchListData.get(position).getAppIcon());
+        holder.imgShortcutIcon.setImageDrawable(appSearchListData.get(position).getShortcutIcon());
+        if (appSearchListData.get(position).getAppIcon() == null){
+         holder.layoutShortcutTittle.setVisibility(View.INVISIBLE);
+        }
 
 
     }
@@ -51,27 +56,29 @@ public class GlobalSearchListAdapter extends RecyclerView.Adapter<GlobalSearchLi
 
     @Override
     public int getItemCount() {
-        return globalSearchListData.size();
+        return appSearchListData.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public ImageView imageView;
-        public ImageView appIcon;
-        public TextView textView;
-        public TextView textViewAppName;
-        public CardView linearLayout;
+        public ImageView imgShortcutIcon;
+        public ImageView imgAppIcon;
+        public TextView tvShortcutName;
+        public TextView tvAppName;
+        public CardView cvShortcutDescription;
+        public LinearLayout layoutShortcutTittle;
 
         OnSearchListener onSearchListener;
 
         public ViewHolder(View itemView, OnSearchListener onSearchListener) {
             super(itemView);
-            this.linearLayout = (CardView) itemView.findViewById(R.id.card_view);
-            this.textViewAppName = (TextView) itemView.findViewById(R.id.txt_app_name);
-            this.imageView = (ImageView) itemView.findViewById(R.id.imageView);
-            this.textView = (TextView) itemView.findViewById(R.id.textView);
-            this.appIcon=  itemView.findViewById(R.id.img_app_icon);
+            this.cvShortcutDescription = (CardView) itemView.findViewById(R.id.cv_desc);
+            this.layoutShortcutTittle = (LinearLayout) itemView.findViewById(R.id.layout_tittle);
+            this.tvAppName = (TextView) itemView.findViewById(R.id.txt_app_name);
+            this.imgShortcutIcon = (ImageView) itemView.findViewById(R.id.img_shortcut_icon);
+            this.tvShortcutName = (TextView) itemView.findViewById(R.id.tv_shortcut_name);
+            this.imgAppIcon = itemView.findViewById(R.id.img_app_icon);
             this.onSearchListener = onSearchListener;
-            linearLayout.setOnClickListener(this);
+            cvShortcutDescription.setOnClickListener(this);
         }
 
         @Override
@@ -79,6 +86,7 @@ public class GlobalSearchListAdapter extends RecyclerView.Adapter<GlobalSearchLi
             onSearchListener.onSearchClick(getAdapterPosition());
         }
     }
+
     public interface OnSearchListener {
         void onSearchClick(int position);
     }

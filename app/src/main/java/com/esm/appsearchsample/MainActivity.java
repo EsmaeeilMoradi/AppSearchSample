@@ -15,11 +15,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,11 +24,9 @@ import com.esm.appsearchsample.adapter.BetterAdapter_Visitor;
 import com.esm.appsearchsample.adapter.TypeFactory;
 import com.esm.appsearchsample.adapter.TypeFactoryForList;
 import com.esm.appsearchsample.adapter.Visitable;
-import com.esm.appsearchsample.entities.AppSearchShortcutData;
+import com.esm.appsearchsample.entities.AppSearchShortcut;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -42,12 +37,11 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
     private String appName = "";
     private Drawable appIcon;
     private String appName2 = "";
-    private ArrayList<GlobalSearchListData> myListData = new ArrayList<>();
-    private ArrayList<Visitable> elementList = new ArrayList<>();
+//    private ArrayList<GlobalSearchListData> myListData = new ArrayList<>();
+    private ArrayList<Visitable>  elementList = new ArrayList<>();
 
     TypeFactory typeFactory = new TypeFactoryForList();
-    ;
-    private GlobalSearchListAdapter adapter = new GlobalSearchListAdapter(myListData, this);
+//    private GlobalSearchListAdapter adapter = new GlobalSearchListAdapter(myListData, this);
     private BetterAdapter_Visitor adapter2 = new BetterAdapter_Visitor(
             elementList,
             typeFactory
@@ -124,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
                                                                             listAppSearchResult2.get(x).getGenericDocument().getPropertyString("intents") != null
                                                             ) {
 
-                                                                Drawable d = AppUtils.getAppIconFromIconResId(context, listAppSearchResult2, x);
+                                                                Drawable d = AppUtils.getShortcutIconFromIconResId(context, listAppSearchResult2, x);
                                                                 appName = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x).getGenericDocument().getNamespace());
                                                                 appIcon = AppUtils.getAppIconFromPkgName(context, listAppSearchResult2.get(x).getGenericDocument().getNamespace());
 
@@ -143,13 +137,17 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
 //                                                                        listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("intents"),
 //                                                                        appName
 //                                                                ));
-                                                                elementList.add(new GlobalSearchListData(
+                                                                elementList.add(new AppSearchShortcut(
                                                                         appIcon,
                                                                         listAppSearchResult2.get(x).getGenericDocument().getPropertyString("shortLabel"),
                                                                         d,
                                                                         listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("intents"),
                                                                         appName
                                                                 ));
+
+
+
+
 
 
                                                             }
@@ -163,14 +161,14 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
 
 
                                                     } else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:Person") && false) {
-                                                        myListData.add(new GlobalSearchListData(
-                                                                appIcon,
-                                                                listAppSearchResult2.get(x).getGenericDocument().getPropertyString("givenName"),
-                                                                ContextCompat.getDrawable(getApplication(), R.drawable.ic_launcher_background),
-                                                                listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("externalUri"),
-                                                                "Contact Person"));
+//                                                        myListData.add(new GlobalSearchListData(
+//                                                                appIcon,
+//                                                                listAppSearchResult2.get(x).getGenericDocument().getPropertyString("givenName"),
+//                                                                ContextCompat.getDrawable(getApplication(), R.drawable.ic_launcher_background),
+//                                                                listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("externalUri"),
+//                                                                "Contact Person"));
 
-                                                        adapter.notifyDataSetChanged();
+//                                                        adapter.notifyDataSetChanged();
 
 
                                                     } else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:ContactPoint") && false) {
@@ -219,12 +217,12 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
     @Override
     public void onSearchClick(int position) {
         Intent intent;
-        try {
-            intent = Intent.parseUri(myListData.get(position).getIntent()[0], 0);
-            startActivity(intent);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        Toast.makeText(this, "click on item: " + myListData.get(position).getDescription(), Toast.LENGTH_LONG).show();
+//        try {
+//            intent = Intent.parseUri(myListData.get(position).getIntent()[0], 0);
+//            startActivity(intent);
+//        } catch (URISyntaxException e) {
+//            throw new RuntimeException(e);
+//        }
+//        Toast.makeText(this, "click on item: " + myListData.get(position).getDescription(), Toast.LENGTH_LONG).show();
     }
 }

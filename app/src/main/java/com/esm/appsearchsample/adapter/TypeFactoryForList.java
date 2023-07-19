@@ -2,21 +2,21 @@ package com.esm.appsearchsample.adapter;
 
 import android.view.View;
 
-import com.esm.appsearchsample.GlobalSearchListData;
+import com.esm.appsearchsample.entities.AppSearchShortcut;
 import com.esm.appsearchsample.adapter.exception.TypeNotSupportedException;
 import com.esm.appsearchsample.adapter.viewholders.AbstractBetterViewHolder;
 import com.esm.appsearchsample.adapter.viewholders.GlobalViewHolder;
-import com.esm.appsearchsample.adapter.viewholders.ShortcutViewHolder;
-import com.esm.appsearchsample.entities.AppSearchShortcutData;
+import com.esm.appsearchsample.adapter.viewholders.ShortcutViewHolderTemp;
+import com.esm.appsearchsample.entities.AppSearchShortcutDataTemp;
 
 public class TypeFactoryForList implements TypeFactory {
     @Override
-    public int type(AppSearchShortcutData searchShortcutInfoData) {
-        return ShortcutViewHolder.LAYOUT;
+    public int type(AppSearchShortcutDataTemp searchShortcutInfoData) {
+        return ShortcutViewHolderTemp.LAYOUT;
     }
 
     @Override
-    public int type(GlobalSearchListData globalSearchListData) {
+    public int type(AppSearchShortcut appSearchShortcut) {
         return GlobalViewHolder.LAYOUT;
     }
 
@@ -25,8 +25,8 @@ public class TypeFactoryForList implements TypeFactory {
 
         AbstractBetterViewHolder createdViewHolder;
 
-        if (type == ShortcutViewHolder.LAYOUT) {
-            createdViewHolder = new ShortcutViewHolder(parent);
+        if (type == ShortcutViewHolderTemp.LAYOUT) {
+            createdViewHolder = new ShortcutViewHolderTemp(parent);
 
         }
         else if (type == GlobalViewHolder.LAYOUT) {

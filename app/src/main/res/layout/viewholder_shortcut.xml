@@ -1,35 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/linearLayout"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="5dp"
-    android:layout_marginTop="0dp"
-    android:layout_marginEnd="5dp"
-    android:orientation="vertical"
-    android:padding="1dp">
 
-    <TextView
-        android:id="@+id/tv_app_name"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp"
+    android:orientation="vertical"
+    tools:background="#EFF1F2">
+
+    <LinearLayout
+        android:id="@+id/layout_tittle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
         android:background="@drawable/lmo_preference_background_top"
-        android:paddingStart="14dp"
-        android:paddingTop="12dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="12dp"
+        android:orientation="horizontal"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        >
 
-        android:text="2018"
-        android:textColor="#000000"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/img_app_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            tools:src="@drawable/ic_launcher_foreground"
+            android:contentDescription="show icon from search by shortcut"/>
+
+        <TextView
+            android:id="@+id/txt_app_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:paddingStart="14dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="12dp"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="Youtube" />
+    </LinearLayout>
 
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cv_shortcut"
+        android:id="@+id/cv_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -38,15 +60,12 @@
         android:paddingBottom="14dp"
         app:background="@color/black"
         app:cardCornerRadius="0dp"
-        app:cardElevation="0dp"
-
-        >
+        app:cardElevation="0dp">
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             android:layout_gravity="center"
             android:orientation="horizontal"
             android:paddingLeft="4dp"
@@ -55,27 +74,27 @@
             android:paddingBottom="10dp">
 
             <ImageView
-                android:id="@+id/iv_app_icon"
+                android:id="@+id/img_shortcut_icon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_alignParentStart="true"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="4dp"
-                android:contentDescription="Icon" />
+                android:contentDescription="Icon"
+                tools:src="@drawable/ic_launcher_foreground" />
 
             <TextView
-                android:id="@+id/tv_shortname"
+                android:id="@+id/tv_shortcut_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="4dp"
-
                 android:gravity="center"
-                android:text="slfjgnsitngisntr;"
                 android:textColor="#000000"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                tools:text="Compose" />
 
         </LinearLayout>
 
