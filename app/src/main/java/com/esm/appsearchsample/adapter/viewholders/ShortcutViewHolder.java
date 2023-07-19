@@ -1,11 +1,13 @@
 package com.esm.appsearchsample.adapter.viewholders;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -16,6 +18,7 @@ import com.esm.appsearchsample.GlobalSearchListAdapter;
 import com.esm.appsearchsample.entities.AppSearchShortcut;
 import com.esm.appsearchsample.R;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class ShortcutViewHolder extends AbstractBetterViewHolder<AppSearchShortcut> {
@@ -59,6 +62,22 @@ public class ShortcutViewHolder extends AbstractBetterViewHolder<AppSearchShortc
         tvAppName.setText(element.getAppName());
         imgAppIcon.setImageDrawable(element.getAppIcon());
         imgShortcutIcon.setImageDrawable(element.getShortcutIcon());
+
+        cvShortcutDescription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(view.getContext(), "click on item: " + element.getShortLabel(), Toast.LENGTH_LONG).show();
+                Intent intent;
+                try {
+                    intent = Intent.parseUri(element.getShortcutIntent()[0], 0);
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e);
+                }
+                view.getContext().startActivity(intent);
+
+
+            }
+        });
 
 
     }
