@@ -1,5 +1,6 @@
 package com.esm.appsearchsample.adapter.viewholders;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -10,11 +11,14 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 
+import com.esm.appsearchsample.AppUtils;
 import com.esm.appsearchsample.GlobalSearchListAdapter;
 import com.esm.appsearchsample.entities.AppSearchShortcut;
 import com.esm.appsearchsample.R;
 
-public class GlobalViewHolder extends AbstractBetterViewHolder<AppSearchShortcut> {
+import java.util.ArrayList;
+
+public class ShortcutViewHolder extends AbstractBetterViewHolder<AppSearchShortcut> {
 
     @LayoutRes
     public static final int LAYOUT = R.layout.viewholder_shortcut;
@@ -30,7 +34,7 @@ public class GlobalViewHolder extends AbstractBetterViewHolder<AppSearchShortcut
 
     GlobalSearchListAdapter.OnSearchListener onSearchListener;
 
-    public GlobalViewHolder(@NonNull View view) {
+    public ShortcutViewHolder(@NonNull View view) {
         super(view);
     }
 
@@ -38,16 +42,18 @@ public class GlobalViewHolder extends AbstractBetterViewHolder<AppSearchShortcut
     @Override
     public void bind(AppSearchShortcut element) {
 
-
-        cvShortcutDescription.setBackgroundResource(R.drawable.lmo_preference_background_middle);
-        if (element.getAppIcon() == null) {
-            layoutShortcutTittle.setVisibility(View.GONE);
-            setMargins(layoutShortcutMain,0,0,0,0);
-        } else {
+        if (element.getAppIcon() != null) {
             layoutShortcutTittle.setVisibility(View.VISIBLE);
-            setMargins(layoutShortcutMain,4,4,4,4);
-
+            setMargins(layoutShortcutMain, 4, 8, 4, 4);
+            cvShortcutDescription.setBackgroundResource(R.drawable.lmo_preference_background_middle);
+        } else {
+            layoutShortcutTittle.setVisibility(View.GONE);
+            setMargins(layoutShortcutMain, 0, 0, 0, 0);
+            cvShortcutDescription.setBackgroundResource(R.drawable.lmo_preference_background_bottom);
         }
+
+        Log.e("ESM", "bind: "+element.getAppName() );
+
 
         tvShortcutName.setText(element.getShortLabel());
         tvAppName.setText(element.getAppName());
