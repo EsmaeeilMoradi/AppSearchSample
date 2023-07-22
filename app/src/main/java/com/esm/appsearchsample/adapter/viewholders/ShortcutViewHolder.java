@@ -1,5 +1,7 @@
 package com.esm.appsearchsample.adapter.viewholders;
 
+import static com.esm.appsearchsample.AppUtils.setMargins;
+
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
@@ -48,11 +50,11 @@ public class ShortcutViewHolder extends AbstractBetterViewHolder<AppSearchShortc
         if (element.getAppIcon() != null) {
             layoutShortcutTittle.setVisibility(View.VISIBLE);
             setMargins(layoutShortcutMain, 4, 8, 4, 4);
-            cvShortcutDescription.setBackgroundResource(R.drawable.lmo_preference_background_middle);
+//            cvShortcutDescription.setBackgroundResource(R.drawable.lmo_preference_background_middle);
         } else {
             layoutShortcutTittle.setVisibility(View.GONE);
             setMargins(layoutShortcutMain, 0, 0, 0, 0);
-            cvShortcutDescription.setBackgroundResource(R.drawable.lmo_preference_background_bottom);
+//            cvShortcutDescription.setBackgroundResource(R.drawable.lmo_preference_background_bottom);
         }
 
         Log.e("ESM", "bind: "+element.getAppName() );
@@ -74,18 +76,10 @@ public class ShortcutViewHolder extends AbstractBetterViewHolder<AppSearchShortc
                     throw new RuntimeException(e);
                 }
                 view.getContext().startActivity(intent);
-
-
             }
         });
 
 
     }
-    private void setMargins (View view, int left, int top, int right, int bottom) {
-        if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-            p.setMargins(left, top, right, bottom);
-            view.requestLayout();
-        }
-    }
+
 }

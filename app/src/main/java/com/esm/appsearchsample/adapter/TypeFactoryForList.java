@@ -2,6 +2,8 @@ package com.esm.appsearchsample.adapter;
 
 import android.view.View;
 
+import com.esm.appsearchsample.adapter.viewholders.PersonViewHolder;
+import com.esm.appsearchsample.entities.AppSearchPerson;
 import com.esm.appsearchsample.entities.AppSearchShortcut;
 import com.esm.appsearchsample.adapter.exception.TypeNotSupportedException;
 import com.esm.appsearchsample.adapter.viewholders.AbstractBetterViewHolder;
@@ -21,6 +23,11 @@ public class TypeFactoryForList implements TypeFactory {
     }
 
     @Override
+    public int type(AppSearchPerson appSearchPerson) {
+         return PersonViewHolder.LAYOUT;
+    }
+
+    @Override
     public AbstractBetterViewHolder createViewHolder(View parent, int type) {
 
         AbstractBetterViewHolder createdViewHolder;
@@ -32,6 +39,8 @@ public class TypeFactoryForList implements TypeFactory {
         else if (type == ShortcutViewHolder.LAYOUT) {
             createdViewHolder = new ShortcutViewHolder(parent);
 
+        }else if (type == PersonViewHolder.LAYOUT){
+            createdViewHolder=new PersonViewHolder(parent);
         }
 
         else {

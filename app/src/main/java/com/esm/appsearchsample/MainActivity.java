@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +25,7 @@ import com.esm.appsearchsample.adapter.BetterAdapter_Visitor;
 import com.esm.appsearchsample.adapter.TypeFactory;
 import com.esm.appsearchsample.adapter.TypeFactoryForList;
 import com.esm.appsearchsample.adapter.Visitable;
+import com.esm.appsearchsample.entities.AppSearchPerson;
 import com.esm.appsearchsample.entities.AppSearchShortcut;
 
 import java.util.ArrayList;
@@ -100,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
                             globalSearchSessionAppSearchResult.getResultValue().search(s.toString(), searchSpec).getNextPage(mExecutor,
                                     listAppSearchResult -> {
 
-                                        List<SearchResult> listAppSearchResult2 = listAppSearchResult.getResultValue();
+                                        List<SearchResult> listGlobalSearchResult = listAppSearchResult.getResultValue();
                                         Log.e("ESM", "SIZE :   " + listAppSearchResult.getResultValue().size());
 
                                         mUiHandler.post(new Runnable() {
@@ -111,19 +113,19 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
                                                     Log.e("ESM", "GenericDocument(" + x + ") :   " + listAppSearchResult.getResultValue().get(x).getGenericDocument());
 
 
-                                                    if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("Shortcut")) {
+                                                    if (listGlobalSearchResult.get(x).getGenericDocument().getSchemaType().equals("Shortcut") ) {
                                                         try {
                                                             if (
-                                                                    listAppSearchResult2.get(x).getGenericDocument().getPropertyString("shortLabel") != null &
-                                                                            listAppSearchResult2.get(x).getGenericDocument().getPropertyString("intents") != null
+                                                                    listGlobalSearchResult.get(x).getGenericDocument().getPropertyString("shortLabel") != null &
+                                                                            listGlobalSearchResult.get(x).getGenericDocument().getPropertyString("intents") != null
                                                             ) {
 
-                                                                Drawable d = AppUtils.getShortcutIconFromIconResId(context, listAppSearchResult2, x);
-                                                                appName = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x).getGenericDocument().getNamespace());
-                                                                appIcon = AppUtils.getAppIconFromPkgName(context, listAppSearchResult2.get(x).getGenericDocument().getNamespace());
+                                                                Drawable d = AppUtils.getShortcutIconFromIconResId(context, listGlobalSearchResult, x);
+                                                                appName = AppUtils.getAppNameFromPkgName(context, listGlobalSearchResult.get(x).getGenericDocument().getNamespace());
+                                                                appIcon = AppUtils.getAppIconFromPkgName(context, listGlobalSearchResult.get(x).getGenericDocument().getNamespace());
 
                                                                 if (x >= 1) {
-                                                                    appName2 = AppUtils.getAppNameFromPkgName(context, listAppSearchResult2.get(x - 1).getGenericDocument().getNamespace());
+                                                                    appName2 = AppUtils.getAppNameFromPkgName(context, listGlobalSearchResult.get(x - 1).getGenericDocument().getNamespace());
                                                                     if (appName == appName2) {
                                                                         appName = "";
                                                                         appIcon = null;
@@ -132,23 +134,18 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
                                                                 }
 //                                                                myListData.add(new GlobalSearchListData(
 //                                                                        appIcon,
-//                                                                        listAppSearchResult2.get(x).getGenericDocument().getPropertyString("shortLabel"),
+//                                                                        listGlobalSearchResult.get(x).getGenericDocument().getPropertyString("shortLabel"),
 //                                                                        d,
-//                                                                        listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("intents"),
+//                                                                        listGlobalSearchResult.get(x).getGenericDocument().getPropertyStringArray("intents"),
 //                                                                        appName
 //                                                                ));
                                                                 elementList.add(new AppSearchShortcut(
                                                                         appIcon,
-                                                                        listAppSearchResult2.get(x).getGenericDocument().getPropertyString("shortLabel"),
+                                                                        listGlobalSearchResult.get(x).getGenericDocument().getPropertyString("shortLabel"),
                                                                         d,
-                                                                        listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("intents"),
+                                                                        listGlobalSearchResult.get(x).getGenericDocument().getPropertyStringArray("intents"),
                                                                         appName
                                                                 ));
-
-
-
-
-
 
                                                             }
 
@@ -160,23 +157,47 @@ public class MainActivity extends AppCompatActivity implements GlobalSearchListA
                                                         adapter2.notifyDataSetChanged();
 
 
-                                                    } else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:Person") && false) {
+                                                    } else if (listGlobalSearchResult.get(x).getGenericDocument().getSchemaType().equals("builtin:Person") ) {
+
+                                                        Log.e("Test", "SchemaType(builtin:ContactPoint) : " + listGlobalSearchResult.get(x).getGenericDocument().getSchemaType());
+
 //                                                        myListData.add(new GlobalSearchListData(
 //                                                                appIcon,
-//                                                                listAppSearchResult2.get(x).getGenericDocument().getPropertyString("givenName"),
+//                                                                listGlobalSearchResult.get(x).getGenericDocument().getPropertyString("givenName"),
 //                                                                ContextCompat.getDrawable(getApplication(), R.drawable.ic_launcher_background),
-//                                                                listAppSearchResult2.get(x).getGenericDocument().getPropertyStringArray("externalUri"),
+//                                                                listGlobalSearchResult.get(x).getGenericDocument().getPropertyStringArray("externalUri"),
 //                                                                "Contact Person"));
-
 //                                                        adapter.notifyDataSetChanged();
 
+                                                        adapter2.notifyDataSetChanged();
 
-                                                    } else if (listAppSearchResult2.get(x).getGenericDocument().getSchemaType().equals("builtin:ContactPoint") && false) {
-                                                        Log.e("Test", "SchemaType(builtin:ContactPoint) : " + listAppSearchResult2.get(x).getGenericDocument().getSchemaType());
+                                                        try {
+//                                                            Log.e("ESM", "run: "+listGlobalSearchResult.get(x).getGenericDocument().getPropertyString("name"));
+//                                                            Log.e("ESM", "run: "+listGlobalSearchResult.get(x).getGenericDocument().getPropertyString("imageUri"));
+//                                                            Log.e("ESM", "run: "+listGlobalSearchResult.get(x).getGenericDocument().getPropertyString("externalUri"));
+
+
+
+                                                            elementList.add(new AppSearchPerson(
+                                                                    listGlobalSearchResult.get(x).getGenericDocument().getPropertyString("name"),
+                                                                    listGlobalSearchResult.get(x).getGenericDocument().getPropertyString("imageUri"),
+                                                                    listGlobalSearchResult.get(x).getGenericDocument().getPropertyString("externalUri")
+
+                                                            ));
+
+                                                            adapter2.notifyDataSetChanged();
+
+
+                                                        }catch (Exception e ){
+                                                            e.printStackTrace();
+                                                        }
+
+                                                    } else if (listGlobalSearchResult.get(x).getGenericDocument().getSchemaType().equals("builtin:ContactPoint") && false) {
+                                                        Log.e("Test", "SchemaType(builtin:ContactPoint) : " + listGlobalSearchResult.get(x).getGenericDocument().getSchemaType());
 
                                                     } else {
                                                         Log.e("Test", "SchemaType(Unknown) :  Not yet added to the structure of the program|==> "
-                                                                + listAppSearchResult2.get(x).getGenericDocument().getSchemaType());
+                                                                + listGlobalSearchResult.get(x).getGenericDocument().getSchemaType());
                                                     }
 
                                                 }
