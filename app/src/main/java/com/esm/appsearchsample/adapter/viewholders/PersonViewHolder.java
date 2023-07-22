@@ -39,6 +39,7 @@ public class PersonViewHolder extends AbstractBetterViewHolder<AppSearchPerson> 
 
         Log.e("ESM", "bind: "+element.getPersonName() );
         tvPersonName.setText(element.getPersonName());
+            cvPerson.setBackgroundResource(R.drawable.lmo_preference_background);
 
         if (element.getPersonIcon()!= null) {
             imgPersonIcon.setVisibility(View.VISIBLE);
