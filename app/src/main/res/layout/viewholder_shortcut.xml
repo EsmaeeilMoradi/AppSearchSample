@@ -6,20 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingStart="4dp"
-    android:paddingEnd="4dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
     tools:background="#EFF1F2">
 
     <LinearLayout
         android:id="@+id/layout_tittle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
+        android:layout_marginTop="6dp"
         android:background="@drawable/lmo_preference_background_top"
         android:orientation="horizontal"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp">
+        >
 
         <ImageView
             android:id="@+id/img_app_icon"
@@ -57,7 +55,7 @@
         android:elevation="4dp"
         android:focusable="true"
         android:paddingBottom="14dp"
-        app:background="@color/black"
+        android:layout_marginTop="2dp"
         app:cardCornerRadius="0dp"
         app:cardElevation="0dp">
 
@@ -67,9 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="horizontal"
-            android:paddingLeft="4dp"
             android:paddingTop="10dp"
-            android:paddingRight="4dp"
             android:paddingBottom="10dp">
 
             <ImageView

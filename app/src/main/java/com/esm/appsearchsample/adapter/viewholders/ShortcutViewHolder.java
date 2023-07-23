@@ -46,15 +46,12 @@ public class ShortcutViewHolder extends AbstractBetterViewHolder<AppSearchShortc
 
         if (element.getAppIcon() != null) {
             layoutShortcutTittle.setVisibility(View.VISIBLE);
-            setMargins(layoutShortcutMain, 4, 8, 4, 4);
-//            cvShortcutDescription.setBackgroundResource(R.drawable.lmo_preference_background_middle);
+
         } else {
             layoutShortcutTittle.setVisibility(View.GONE);
-            setMargins(layoutShortcutMain, 0, 0, 0, 0);
-//            cvShortcutDescription.setBackgroundResource(R.drawable.lmo_preference_background_bottom);
         }
 
-        Log.e("ESM", "bind: "+element.getAppName() );
+        Log.e("ESM", "bind: " + element.getAppName());
 
 
         tvShortcutName.setText(element.getShortLabel());
