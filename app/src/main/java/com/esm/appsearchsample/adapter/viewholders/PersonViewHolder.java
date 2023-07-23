@@ -1,8 +1,6 @@
 package com.esm.appsearchsample.adapter.viewholders;
 
 
-import static com.esm.appsearchsample.AppUtils.setMargins;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
@@ -37,10 +35,8 @@ public class PersonViewHolder extends AbstractBetterViewHolder<AppSearchPerson> 
     @Override
     public void bind(AppSearchPerson element) {
 
-        Log.e("ESM", "bind: "+element.getPersonName() );
         tvPersonName.setText(element.getPersonName());
             cvPerson.setBackgroundResource(R.drawable.lmo_preference_background);
-
         if (element.getPersonIcon()!= null) {
             imgPersonIcon.setVisibility(View.VISIBLE);
             imgPersonIcon.setImageURI(Uri.parse(element.getPersonIcon()));

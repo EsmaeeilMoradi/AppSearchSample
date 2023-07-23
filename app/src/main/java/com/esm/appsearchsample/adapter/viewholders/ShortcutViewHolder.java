@@ -5,7 +5,6 @@ import static com.esm.appsearchsample.AppUtils.setMargins;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,13 +14,11 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 
-import com.esm.appsearchsample.AppUtils;
 import com.esm.appsearchsample.GlobalSearchListAdapter;
-import com.esm.appsearchsample.entities.AppSearchShortcut;
 import com.esm.appsearchsample.R;
+import com.esm.appsearchsample.entities.AppSearchShortcut;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 
 public class ShortcutViewHolder extends AbstractBetterViewHolder<AppSearchShortcut> {
 
