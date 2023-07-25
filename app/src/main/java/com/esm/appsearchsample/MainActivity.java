@@ -6,7 +6,6 @@ import android.app.appsearch.SearchResult;
 import android.app.appsearch.SearchSpec;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,9 +14,15 @@ import android.util.Log;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.esm.appsearchsample.adapter.Adapter_Visitor;
+import com.esm.appsearchsample.adapter.TypeFactory;
+import com.esm.appsearchsample.adapter.TypeFactoryForList;
+import com.esm.appsearchsample.adapter.Visitable;
+import com.esm.appsearchsample.entities.AppSearchPerson;
+import com.esm.appsearchsample.entities.AppSearchShortcut;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +38,16 @@ public class MainActivity extends AppCompatActivity {
     private GenericDocument searchResultsDoc;
     private List<SearchResult> listAppSearchResultIterable;
     private String appName = "";
+    private Drawable appIcon;
+    private Drawable shortcutIcon;
+
+    private ArrayList<Visitable> elementsearchList = new ArrayList<>();
+    private TypeFactory typeFactory = new TypeFactoryForList();
+    private Adapter_Visitor adapter = new Adapter_Visitor(elementsearchList, typeFactory);
 
     private EditText editTextGlobalSearch;
     private RecyclerView recyclerViewGlobalSearch;
-    private ArrayList<GlobalSearchData> globalSearchDataList;
-    private GlobalSearchAdapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         editTextGlobalSearch = findViewById(R.id.edt_search);
         recyclerViewGlobalSearch = findViewById(R.id.rv_search_result);
-        globalSearchDataList = new ArrayList<>();
 
-        adapter = new GlobalSearchAdapter(globalSearchDataList);
         recyclerViewGlobalSearch.setHasFixedSize(true);
         recyclerViewGlobalSearch.setLayoutManager(new LinearLayoutManager(getApplication()));
         recyclerViewGlobalSearch.setAdapter(adapter);
@@ -62,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         editTextGlobalSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence text, int start, int count, int after) {
-                globalSearchDataList.clear();
+                elementsearchList.clear();
                 adapter.notifyDataSetChanged();
 
             }
@@ -70,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence text, int start, int before, int count) {
                 if (count == 0) {
-                    globalSearchDataList.clear();
+                    elementsearchList.clear();
                     adapter.notifyDataSetChanged();
                 }
                 if (count != 0) {
@@ -85,33 +93,20 @@ public class MainActivity extends AppCompatActivity {
                                     searchResultsDoc = listAppSearchResult.getResultValue().get(searchItem).getGenericDocument();
                                     if (searchResultsDoc.getSchemaType().equals("Shortcut")) {
                                         try {
-                                            if (searchResultsDoc.getPropertyString("shortLabel") != null
-                                                    & searchResultsDoc.getPropertyString("intents") != null) {
+                                            if (searchResultsDoc.getPropertyString("shortLabel") != null & searchResultsDoc.getPropertyString("intents") != null) {
 
-                                                Resources resSearchItem =
-                                                        getApplication().getPackageManager().getResourcesForApplication(searchResultsDoc.getNamespace());
+                                                shortcutIcon = AppUtils.getShortcutIconFromIconResId(context, listAppSearchResultIterable, searchItem);
+                                                appName = AppUtils.getAppNameFromPkgName(context, listAppSearchResultIterable.get(searchItem).getGenericDocument().getNamespace());
+                                                appIcon = AppUtils.getAppIconFromPkgName(context, listAppSearchResultIterable.get(searchItem).getGenericDocument().getNamespace());
 
-                                                int iconResId = (int) searchResultsDoc.getPropertyLong("iconResId");
-                                                Drawable icon;
-                                                if (iconResId != 0) {
-                                                    icon = resSearchItem.getDrawable(iconResId);
-                                                } else {
-                                                    icon = getDrawable(R.drawable.border);
-                                                }
-
-                                                appName = AppUtils.getAppNameFromPkgName(context, searchResultsDoc.getNamespace());
                                                 if (searchItem >= 1) {
-                                                    if (appName ==
-                                                            AppUtils.getAppNameFromPkgName(context, listAppSearchResultIterable.get(searchItem - 1).getGenericDocument().getNamespace())) {
+                                                    if (appName == AppUtils.getAppNameFromPkgName(context, listAppSearchResultIterable.get(searchItem - 1).getGenericDocument().getNamespace())) {
                                                         appName = "";
+                                                        appIcon = null;
                                                     }
                                                 }
-                                                globalSearchDataList.add(new
-                                                        GlobalSearchData(
-                                                        searchResultsDoc.getPropertyString("shortLabel"),
-                                                        icon,
-                                                        searchResultsDoc.getPropertyStringArray("intents"),
-                                                        appName));
+
+                                                elementsearchList.add(new AppSearchShortcut(appIcon, searchResultsDoc.getPropertyString("shortLabel"), shortcutIcon, searchResultsDoc.getPropertyStringArray("intents"), appName));
                                             }
 
                                         } catch (PackageManager.NameNotFoundException e) {
@@ -123,17 +118,19 @@ public class MainActivity extends AppCompatActivity {
                                     } else if (searchResultsDoc.getSchemaType().equals("builtin:Person")) {
                                         Log.e(TAG, "SchemaType(builtin:Person) : " + searchResultsDoc.getSchemaType());
 
-                                        globalSearchDataList.add(new GlobalSearchData(
-                                                searchResultsDoc.getPropertyString("givenName"),
-                                                ContextCompat.getDrawable(getApplication(), R.drawable.ic_launcher_background),
-                                                listAppSearchResultIterable.get(searchItem).getGenericDocument().getPropertyStringArray("externalUri"), "Contact Person"));
-                                        adapter.notifyDataSetChanged();
+                                        try {
+                                            elementsearchList.add(new AppSearchPerson(searchResultsDoc.getPropertyString("name"), searchResultsDoc.getPropertyString("imageUri"), searchResultsDoc.getPropertyString("externalUri")));
+                                            adapter.notifyDataSetChanged();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
 
                                     } else if (searchResultsDoc.getSchemaType().equals("builtin:ContactPoint")) {
-                                        Log.e(TAG, "SchemaType(builtin:ContactPoint) : " + listAppSearchResultIterable.get(searchItem).getGenericDocument().getSchemaType());
+                                        Log.e(TAG, "SchemaType(builtin:ContactPoint) : " + searchResultsDoc.getSchemaType());
+
 
                                     } else {
-                                        Log.e(TAG, "SchemaType(Unknown) :  Not yet added to the structure of the program|==> " + listAppSearchResultIterable.get(searchItem).getGenericDocument().getSchemaType());
+                                        Log.e(TAG, "SchemaType(Unknown) :  Not yet added to the structure of the program|==> " + searchResultsDoc.getSchemaType());
                                     }
                                 }
                             });
@@ -148,9 +145,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable text) {
                 adapter.notifyDataSetChanged();
-                globalSearchDataList.clear();
+                elementsearchList.clear();
             }
         });
-
     }
 }
