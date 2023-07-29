@@ -8,8 +8,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
 
@@ -41,9 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private Drawable appIcon;
     private Drawable shortcutIcon;
 
-    private ArrayList<Visitable> elementsearchList = new ArrayList<>();
-    private TypeFactory typeFactory = new TypeFactoryForList();
-    private Adapter_Visitor adapter = new Adapter_Visitor(elementsearchList, typeFactory);
+    private final ArrayList<Visitable> elementSearchList = new ArrayList<>();
+    private final TypeFactory typeFactory = new TypeFactoryForList();
+    private final Adapter_Visitor adapter = new Adapter_Visitor(elementSearchList, typeFactory);
 
     private EditText editTextGlobalSearch;
     private RecyclerView recyclerViewGlobalSearch;
@@ -67,83 +65,67 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewGlobalSearch.setLayoutManager(new LinearLayoutManager(getApplication()));
         recyclerViewGlobalSearch.setAdapter(adapter);
 
-        editTextGlobalSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence text, int start, int count, int after) {
-                elementsearchList.clear();
-                adapter.notifyDataSetChanged();
+        new MultiTextWatcher().registerEditText(editTextGlobalSearch).setCallback((editText, s, start, before, count) -> {
+            elementSearchList.clear();
+            adapter.notifyDataSetChanged();
 
-            }
+            if (s.length() >= 1) try {
+                appSearchManager.createGlobalSearchSession(mExecutor, globalSearchSessionAppSearchResult -> {
+                    Log.e(TAG, "onCreate: check globalSearchSession " + globalSearchSessionAppSearchResult.isSuccess());
+                    globalSearchSessionAppSearchResult.getResultValue().search(s.toString(), searchSpec).getNextPage(mExecutor, listAppSearchResult -> {
 
-            @Override
-            public void onTextChanged(CharSequence text, int start, int before, int count) {
-                elementsearchList.clear();
-                adapter.notifyDataSetChanged();
-               
-                if (text.length() >= 1) try {
-                    appSearchManager.createGlobalSearchSession(mExecutor, globalSearchSessionAppSearchResult -> {
-                        Log.e(TAG, "onCreate: check globalSearchSession " + globalSearchSessionAppSearchResult.isSuccess());
-                        globalSearchSessionAppSearchResult.getResultValue().search(text.toString(), searchSpec).getNextPage(mExecutor, listAppSearchResult -> {
+                        listAppSearchResultIterable = listAppSearchResult.getResultValue();
+                        for (int searchItem = 0; searchItem < listAppSearchResultIterable.size(); searchItem++) {
 
-                            listAppSearchResultIterable = listAppSearchResult.getResultValue();
-                            for (int searchItem = 0; searchItem < listAppSearchResultIterable.size(); searchItem++) {
+                            searchResultsDoc = listAppSearchResult.getResultValue().get(searchItem).getGenericDocument();
+                            if (searchResultsDoc.getSchemaType().equals("Shortcut")) {
+                                try {
+                                    if (searchResultsDoc.getPropertyString("shortLabel") != null & searchResultsDoc.getPropertyString("intents") != null) {
 
-                                searchResultsDoc = listAppSearchResult.getResultValue().get(searchItem).getGenericDocument();
-                                if (searchResultsDoc.getSchemaType().equals("Shortcut")) {
-                                    try {
-                                        if (searchResultsDoc.getPropertyString("shortLabel") != null & searchResultsDoc.getPropertyString("intents") != null) {
+                                        shortcutIcon = AppUtils.getShortcutIconFromIconResId(context, listAppSearchResultIterable, searchItem);
+                                        appName = AppUtils.getAppNameFromPkgName(context, listAppSearchResultIterable.get(searchItem).getGenericDocument().getNamespace());
+                                        appIcon = AppUtils.getAppIconFromPkgName(context, listAppSearchResultIterable.get(searchItem).getGenericDocument().getNamespace());
 
-                                            shortcutIcon = AppUtils.getShortcutIconFromIconResId(context, listAppSearchResultIterable, searchItem);
-                                            appName = AppUtils.getAppNameFromPkgName(context, listAppSearchResultIterable.get(searchItem).getGenericDocument().getNamespace());
-                                            appIcon = AppUtils.getAppIconFromPkgName(context, listAppSearchResultIterable.get(searchItem).getGenericDocument().getNamespace());
-
-                                            if (searchItem >= 1) {
-                                                if (appName == AppUtils.getAppNameFromPkgName(context, listAppSearchResultIterable.get(searchItem - 1).getGenericDocument().getNamespace())) {
-                                                    appName = "";
-                                                    appIcon = null;
-                                                }
+                                        if (searchItem >= 1) {
+                                            if (appName == AppUtils.getAppNameFromPkgName(context, listAppSearchResultIterable.get(searchItem - 1).getGenericDocument().getNamespace())) {
+                                                appName = "";
+                                                appIcon = null;
                                             }
-
-                                            elementsearchList.add(new AppSearchShortcut(appIcon, searchResultsDoc.getPropertyString("shortLabel"), shortcutIcon, searchResultsDoc.getPropertyStringArray("intents"), appName));
                                         }
 
-                                    } catch (PackageManager.NameNotFoundException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                    adapter.notifyDataSetChanged();
-
-
-                                } else if (searchResultsDoc.getSchemaType().equals("builtin:Person")) {
-                                    Log.e(TAG, "SchemaType(builtin:Person) : " + searchResultsDoc.getSchemaType());
-
-                                    try {
-                                        elementsearchList.add(new AppSearchPerson(searchResultsDoc.getPropertyString("name"), searchResultsDoc.getPropertyString("imageUri"), searchResultsDoc.getPropertyString("externalUri")));
-                                        adapter.notifyDataSetChanged();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                                        elementSearchList.add(new AppSearchShortcut(appIcon, searchResultsDoc.getPropertyString("shortLabel"), shortcutIcon, searchResultsDoc.getPropertyStringArray("intents"), appName));
                                     }
 
-                                } else if (searchResultsDoc.getSchemaType().equals("builtin:ContactPoint")) {
-                                    Log.e(TAG, "SchemaType(builtin:ContactPoint) : " + searchResultsDoc.getSchemaType());
-
-
-                                } else {
-                                    Log.e(TAG, "SchemaType(Unknown) :  Not yet added to the structure of the program|==> " + searchResultsDoc.getSchemaType());
+                                } catch (PackageManager.NameNotFoundException e) {
+                                    throw new RuntimeException(e);
                                 }
+                                adapter.notifyDataSetChanged();
+
+
+                            } else if (searchResultsDoc.getSchemaType().equals("builtin:Person")) {
+                                Log.e(TAG, "SchemaType(builtin:Person) : " + searchResultsDoc.getSchemaType());
+
+                                try {
+                                    elementSearchList.add(new AppSearchPerson(searchResultsDoc.getPropertyString("name"), searchResultsDoc.getPropertyString("imageUri"), searchResultsDoc.getPropertyString("externalUri")));
+                                    adapter.notifyDataSetChanged();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                            } else if (searchResultsDoc.getSchemaType().equals("builtin:ContactPoint")) {
+                                Log.e(TAG, "SchemaType(builtin:ContactPoint) : " + searchResultsDoc.getSchemaType());
+
+                            } else {
+                                Log.e(TAG, "SchemaType(Unknown) :  Not yet added to the structure of the program|==> " + searchResultsDoc.getSchemaType());
                             }
-                        });
+                        }
                     });
+                });
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable text) {
-                adapter.notifyDataSetChanged();
-                elementsearchList.clear();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
+
     }
 }
