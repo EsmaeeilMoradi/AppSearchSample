@@ -77,68 +77,65 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence text, int start, int before, int count) {
-                if (count == 0) {
-                    elementsearchList.clear();
-                    adapter.notifyDataSetChanged();
-                }
-                if (count != 0) {
-                    try {
-                        appSearchManager.createGlobalSearchSession(mExecutor, globalSearchSessionAppSearchResult -> {
-                            Log.e(TAG, "onCreate: check globalSearchSession " + globalSearchSessionAppSearchResult.isSuccess());
-                            globalSearchSessionAppSearchResult.getResultValue().search(text.toString(), searchSpec).getNextPage(mExecutor, listAppSearchResult -> {
+                elementsearchList.clear();
+                adapter.notifyDataSetChanged();
+               
+                if (text.length() >= 1) try {
+                    appSearchManager.createGlobalSearchSession(mExecutor, globalSearchSessionAppSearchResult -> {
+                        Log.e(TAG, "onCreate: check globalSearchSession " + globalSearchSessionAppSearchResult.isSuccess());
+                        globalSearchSessionAppSearchResult.getResultValue().search(text.toString(), searchSpec).getNextPage(mExecutor, listAppSearchResult -> {
 
-                                listAppSearchResultIterable = listAppSearchResult.getResultValue();
-                                for (int searchItem = 0; searchItem < listAppSearchResultIterable.size(); searchItem++) {
+                            listAppSearchResultIterable = listAppSearchResult.getResultValue();
+                            for (int searchItem = 0; searchItem < listAppSearchResultIterable.size(); searchItem++) {
 
-                                    searchResultsDoc = listAppSearchResult.getResultValue().get(searchItem).getGenericDocument();
-                                    if (searchResultsDoc.getSchemaType().equals("Shortcut")) {
-                                        try {
-                                            if (searchResultsDoc.getPropertyString("shortLabel") != null & searchResultsDoc.getPropertyString("intents") != null) {
+                                searchResultsDoc = listAppSearchResult.getResultValue().get(searchItem).getGenericDocument();
+                                if (searchResultsDoc.getSchemaType().equals("Shortcut")) {
+                                    try {
+                                        if (searchResultsDoc.getPropertyString("shortLabel") != null & searchResultsDoc.getPropertyString("intents") != null) {
 
-                                                shortcutIcon = AppUtils.getShortcutIconFromIconResId(context, listAppSearchResultIterable, searchItem);
-                                                appName = AppUtils.getAppNameFromPkgName(context, listAppSearchResultIterable.get(searchItem).getGenericDocument().getNamespace());
-                                                appIcon = AppUtils.getAppIconFromPkgName(context, listAppSearchResultIterable.get(searchItem).getGenericDocument().getNamespace());
+                                            shortcutIcon = AppUtils.getShortcutIconFromIconResId(context, listAppSearchResultIterable, searchItem);
+                                            appName = AppUtils.getAppNameFromPkgName(context, listAppSearchResultIterable.get(searchItem).getGenericDocument().getNamespace());
+                                            appIcon = AppUtils.getAppIconFromPkgName(context, listAppSearchResultIterable.get(searchItem).getGenericDocument().getNamespace());
 
-                                                if (searchItem >= 1) {
-                                                    if (appName == AppUtils.getAppNameFromPkgName(context, listAppSearchResultIterable.get(searchItem - 1).getGenericDocument().getNamespace())) {
-                                                        appName = "";
-                                                        appIcon = null;
-                                                    }
+                                            if (searchItem >= 1) {
+                                                if (appName == AppUtils.getAppNameFromPkgName(context, listAppSearchResultIterable.get(searchItem - 1).getGenericDocument().getNamespace())) {
+                                                    appName = "";
+                                                    appIcon = null;
                                                 }
-
-                                                elementsearchList.add(new AppSearchShortcut(appIcon, searchResultsDoc.getPropertyString("shortLabel"), shortcutIcon, searchResultsDoc.getPropertyStringArray("intents"), appName));
                                             }
 
-                                        } catch (PackageManager.NameNotFoundException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                        adapter.notifyDataSetChanged();
-
-
-                                    } else if (searchResultsDoc.getSchemaType().equals("builtin:Person")) {
-                                        Log.e(TAG, "SchemaType(builtin:Person) : " + searchResultsDoc.getSchemaType());
-
-                                        try {
-                                            elementsearchList.add(new AppSearchPerson(searchResultsDoc.getPropertyString("name"), searchResultsDoc.getPropertyString("imageUri"), searchResultsDoc.getPropertyString("externalUri")));
-                                            adapter.notifyDataSetChanged();
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
+                                            elementsearchList.add(new AppSearchShortcut(appIcon, searchResultsDoc.getPropertyString("shortLabel"), shortcutIcon, searchResultsDoc.getPropertyStringArray("intents"), appName));
                                         }
 
-                                    } else if (searchResultsDoc.getSchemaType().equals("builtin:ContactPoint")) {
-                                        Log.e(TAG, "SchemaType(builtin:ContactPoint) : " + searchResultsDoc.getSchemaType());
-
-
-                                    } else {
-                                        Log.e(TAG, "SchemaType(Unknown) :  Not yet added to the structure of the program|==> " + searchResultsDoc.getSchemaType());
+                                    } catch (PackageManager.NameNotFoundException e) {
+                                        throw new RuntimeException(e);
                                     }
-                                }
-                            });
-                        });
+                                    adapter.notifyDataSetChanged();
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+
+                                } else if (searchResultsDoc.getSchemaType().equals("builtin:Person")) {
+                                    Log.e(TAG, "SchemaType(builtin:Person) : " + searchResultsDoc.getSchemaType());
+
+                                    try {
+                                        elementsearchList.add(new AppSearchPerson(searchResultsDoc.getPropertyString("name"), searchResultsDoc.getPropertyString("imageUri"), searchResultsDoc.getPropertyString("externalUri")));
+                                        adapter.notifyDataSetChanged();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                } else if (searchResultsDoc.getSchemaType().equals("builtin:ContactPoint")) {
+                                    Log.e(TAG, "SchemaType(builtin:ContactPoint) : " + searchResultsDoc.getSchemaType());
+
+
+                                } else {
+                                    Log.e(TAG, "SchemaType(Unknown) :  Not yet added to the structure of the program|==> " + searchResultsDoc.getSchemaType());
+                                }
+                            }
+                        });
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
