@@ -72,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewGlobalSearch.setLayoutManager(new LinearLayoutManager(getApplication()));
         new MultiTextWatcher().registerEditText(editTextGlobalSearch).setCallback((editText, s, start, before, count) -> {
             elementSearchList.clear();
-//            adapter.insertData(elementSearchList);
-//            recyclerViewGlobalSearch.setAdapter(adapter);
+            recyclerViewGlobalSearch.setAdapter(adapter);
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -85,9 +85,8 @@ public class MainActivity extends AppCompatActivity {
                                 mUiHandler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        adapter.insertData(getListAppSearchResult(listAppSearchResult));
+                                        getListAppSearchResult(listAppSearchResult);
                                         recyclerViewGlobalSearch.setAdapter(adapter);
-
                                     }
                                 });
                             });
@@ -149,8 +148,6 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Log.e(TAG, "SchemaType(Unknown) :  Not yet added to the structure of the program|==> " + searchResultsDoc.getSchemaType());
             }
-
-
         }
         return elementSearchList;
     }

@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.esm.appsearchsample.adapter.viewholders.AbstractViewHolder;
@@ -21,27 +20,6 @@ public class Adapter_Visitor extends RecyclerView.Adapter<AbstractViewHolder> {
         this.elements = elements;
         this.typeFactory = typeFactory;
     }
-
-    public void insertData(List<Visitable> insertList) {
-        /*
-        This function will add new data to RecyclerView
-         */
-        DiffUtilCallback diffUtilCallback = new DiffUtilCallback(elements, insertList);
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
-        elements.addAll(insertList);
-        diffResult.dispatchUpdatesTo(this);
-    }
-
-
-    public void updateData(List<Visitable> newList) {
-        DiffUtilCallback diffUtilCallback = new DiffUtilCallback(elements, newList);
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
-
-        elements.clear();
-        elements.addAll(newList);
-        diffResult.dispatchUpdatesTo(this);
-    }
-
 
     @Override
     public AbstractViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
