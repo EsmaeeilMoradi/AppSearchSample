@@ -6,12 +6,14 @@ import android.app.appsearch.GenericDocument;
 import android.app.appsearch.SearchResult;
 import android.app.appsearch.SearchSpec;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -99,7 +101,13 @@ public class MainActivity extends AppCompatActivity {
             }).start();
 
         });
-
+        findViewById(R.id.img_settings).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 

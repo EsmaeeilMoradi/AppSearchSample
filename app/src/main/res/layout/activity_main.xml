@@ -26,6 +26,12 @@
             android:padding="16dp"
             android:textColorHint="#7f7f7f"
             android:textSize="16sp" />
+        <ImageButton
+            android:id="@+id/img_settings"
+            android:layout_height="35dp"
+            android:layout_width="35dp"
+            android:background="@drawable/baseline_settings_24"
+            android:layout_margin="16dp" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
