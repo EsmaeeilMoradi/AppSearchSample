@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "AppSearchSample"
 include ':app'
 include ':myapplication'
+include ':intelligence'
