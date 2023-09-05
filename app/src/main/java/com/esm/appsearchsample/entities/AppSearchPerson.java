@@ -10,12 +10,15 @@ public class AppSearchPerson implements Visitable {
     private String personIcon;
 
     private String externalUri;
+    private String telephoneNum;
 
 
-    public AppSearchPerson(String personName, String personIcon, String externalUri) {
+
+    public AppSearchPerson(String personName, String personIcon, String externalUri,String telephoneNum) {
         this.personName = personName;
         this.personIcon = personIcon;
         this.externalUri = externalUri;
+        this.telephoneNum = telephoneNum;
     }
 
 
@@ -47,5 +50,13 @@ public class AppSearchPerson implements Visitable {
     @Override
     public int type(TypeFactory typeFactory) {
         return typeFactory.type(this);
+    }
+
+    public String getTelephoneNum() {
+        return telephoneNum;
+    }
+
+    public void setTelephoneNum(String telephoneNum) {
+        this.telephoneNum = telephoneNum;
     }
 }

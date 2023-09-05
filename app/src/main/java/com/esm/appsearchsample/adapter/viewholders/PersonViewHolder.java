@@ -24,6 +24,8 @@ public class PersonViewHolder extends AbstractViewHolder<AppSearchPerson> {
     public ImageView imgPersonIcon = (ImageView) itemView.findViewById(R.id.img_person_icon);
     public TextView tvPersonName = (TextView) itemView.findViewById(R.id.tv_person_name);
     public CardView cvPerson = (CardView) itemView.findViewById(R.id.cv_person);
+    public ImageView ivPersonPhone = (ImageView) itemView.findViewById(R.id.iv_phone);
+    public ImageView ivPersonContact = (ImageView) itemView.findViewById(R.id.iv_contact);
 
     public LinearLayout layoutPersonMain = (LinearLayout) itemView.findViewById(R.id.layout_main_person);
 
@@ -55,6 +57,27 @@ public class PersonViewHolder extends AbstractViewHolder<AppSearchPerson> {
                 view.getContext().startActivity(intent);
             }
         });
+        ivPersonPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Uri number1 = Uri.parse("tel:" + element.getTelephoneNum());
+                Intent callIntent = new Intent(Intent.ACTION_DIAL, number1);
+                v.getContext().startActivity(callIntent);
+
+
+            }
+        });
+
+        ivPersonContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri = Uri.parse("smsto:" + element.getTelephoneNum());
+                Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+                v.getContext().startActivity(intent);
+            }
+        });
+
 
     }
 

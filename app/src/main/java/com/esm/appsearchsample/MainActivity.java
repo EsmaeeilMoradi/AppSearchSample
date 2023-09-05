@@ -28,6 +28,7 @@ import com.esm.appsearchsample.entities.AppSearchPerson;
 import com.esm.appsearchsample.entities.AppSearchShortcut;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -145,7 +146,12 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "SchemaType(builtin:Person) : " + searchResultsDoc.getSchemaType());
 
                 try {
-                    elementSearchList.add(new AppSearchPerson(searchResultsDoc.getPropertyString("name"), searchResultsDoc.getPropertyString("imageUri"), searchResultsDoc.getPropertyString("externalUri")));
+
+                    elementSearchList.add(new AppSearchPerson(searchResultsDoc.getPropertyString("name"),
+                            searchResultsDoc.getPropertyString("imageUri"),
+                            searchResultsDoc.getPropertyString("externalUri"),
+                            Arrays.stream(searchResultsDoc.getPropertyDocumentArray("contactPoints").clone().clone()).iterator().next().getPropertyString("telephone")));
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
