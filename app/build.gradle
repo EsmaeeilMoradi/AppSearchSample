@@ -36,6 +36,9 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
+    buildFeatures {
+        aidl = true
+    }
 }
 
 dependencies {

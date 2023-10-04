@@ -4,6 +4,9 @@
     android:sharedUserId="android.uid.system">
     <uses-permission android:name="android.permission.READ_GLOBAL_APP_SEARCH_DATA" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <queries>
+        <package android:name="com.android.settings.intelligence" />
+    </queries>
 
     <application
         android:allowBackup="true"
