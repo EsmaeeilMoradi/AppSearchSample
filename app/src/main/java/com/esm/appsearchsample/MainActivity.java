@@ -5,13 +5,17 @@ import android.app.appsearch.AppSearchResult;
 import android.app.appsearch.GenericDocument;
 import android.app.appsearch.SearchResult;
 import android.app.appsearch.SearchSpec;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -20,6 +24,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.settings.intelligence.search.ISearchService;
+import com.android.settings.intelligence.search.ISearchServiceCallback;
+import com.android.settings.intelligence.search.SearchServiceResult;
 import com.esm.appsearchsample.adapter.Adapter_Visitor;
 import com.esm.appsearchsample.adapter.TypeFactory;
 import com.esm.appsearchsample.adapter.TypeFactoryForList;
@@ -34,6 +41,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
+    ISearchService searchService;
 
     private static final String TAG = "MainActivity";
     private Executor mExecutor;
@@ -58,6 +66,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        Intent intent = new Intent("SearchService");
+        intent.setPackage("com.android.settings.intelligence");
+        intent.setComponent(new ComponentName("com.android.settings.intelligence", "com.android.settings.intelligence.search.SearchService"));
+        bindService(intent,serviceConnection,BIND_AUTO_CREATE);
 
         //get searchResults by createGlobalSearchSession from AppSearchManager
         searchSpec = new SearchSpec.Builder().build();
@@ -109,6 +123,52 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+
+
+    ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            Log.e("erfan", "connected");
+            searchService= ISearchService.Stub.asInterface(iBinder);
+            try {
+//                actionSwitch.setEnabled(searchService.isIndexingComplete());
+                searchService.startIndexing(new ISearchServiceCallback.Stub() {
+                    @Override
+                    public void onIndexingFinished() throws RemoteException {
+                        Log.e("erfan", "finished");
+                        searchService.querySearch(this, "f");
+                    }
+
+                    @Override
+                    public void onSearchResult(String query, List<SearchServiceResult> result) throws RemoteException {
+                        Log.e("erfan", "finished resss");
+
+                        for (SearchServiceResult r : result) {
+                            Log.e("erfan", r.title.toString());
+//                            Log.e("erfan", r.summary.toString());
+//                            Log.e("erfan", r.dataKey);
+                        }
+                    }
+                });
+
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+        }
+    };
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(serviceConnection);
+    }
+
+
 
 
     private ArrayList<Visitable> getListAppSearchResult(AppSearchResult<List<SearchResult>> listAppSearchResult) {
