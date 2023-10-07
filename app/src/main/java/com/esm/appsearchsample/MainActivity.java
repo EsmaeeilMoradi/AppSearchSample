@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.settings.intelligence.search.SearchActivity;
 import com.esm.appsearchsample.adapter.Adapter_Visitor;
 import com.esm.appsearchsample.adapter.TypeFactory;
 import com.esm.appsearchsample.adapter.TypeFactoryForList;
@@ -106,8 +105,6 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.img_settings).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                startActivity(intent);
             }
         });
 
